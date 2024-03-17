@@ -1,0 +1,40 @@
+version: '3.4'
+
+networks:
+  main-network:
+services:
+  mysql:
+    image: mysql:latest
+    restart: always
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: h8rE5hl44mlpHG4d24xzg1pTujDGq6J53H
+      MYSQL_USER: demo
+      MYSQL_PASSWORD: h8rE5hl44mlpHG4d24xzg1pTujDGq6J53H
+      MYSQL_DATABASE: demo
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+    networks:
+      - main-network
+  backend-service:
+    image: ${DOCKER_REGISTRY-}back
+    restart: always
+    build: DemoveWebApi/
+    depends_on:
+       - mysql
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=demo
+      - DB_PASS=h8rE5hl44mlpHG4d24xzg1pTujDGq6J53H
+      - DB_DB=demo
+      - DB_PORT=3306
+      - ASPNETCORE_ENVIRONMENT=Development  #for swager
+      - ASPNETCORE_URLS=http://+:5123
+    ports:
+      - "5124:5123"
+    networks:
+      - main-network
+volumes:
+  proxy:
+  node_modules:
